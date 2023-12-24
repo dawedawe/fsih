@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    <CopyDocumentationFilesFromPackages>true</CopyDocumentationFilesFromPackages>
+    <NoWarn>$(NoWarn);57;</NoWarn> <!-- Experimental -->
+    <AssemblyName>fsih</AssemblyName>
+    <PackageId>Fsih</PackageId>
+    <PackageDescription>Fsih helps you in the fsi with easy access to docs</PackageDescription>
+    <Authors>David Schaefer</Authors>
+    <PackageOutputPath>./../../nupkg</PackageOutputPath>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <ChangelogFile>./../../CHANGELOG.md</ChangelogFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>fsharp;fsi;help;fsih</PackageTags>
+    <RepositoryUrl>https://github.com/dawedawe/Fsih.git</RepositoryUrl>
+  </PropertyGroup>
+    <ItemGroup>
+    <None Include="./../../README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Parser.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSHarp.Core" Version="8.0.100" />
+    <PackageReference Include="Ionide.KeepAChangelog.Tasks" Version="0.1.8" />
+    <PackageReference Include="Spectre.Console" Version="0.48.0" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A50D52BD-6AA0-4D5B-9B7F-9992C6BD9102}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fsih", "src\Fsih\Fsih.fsproj", "{57321F28-5D6B-43C8-ADD7-67A4A60FEB9B}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fsih.Tests", "src\Fsih.Tests\Fsih.Tests.fsproj", "{B9A1C9FE-6885-43DC-8A01-6D0B5A6E2B08}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{57321F28-5D6B-43C8-ADD7-67A4A60FEB9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57321F28-5D6B-43C8-ADD7-67A4A60FEB9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57321F28-5D6B-43C8-ADD7-67A4A60FEB9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57321F28-5D6B-43C8-ADD7-67A4A60FEB9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9A1C9FE-6885-43DC-8A01-6D0B5A6E2B08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9A1C9FE-6885-43DC-8A01-6D0B5A6E2B08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9A1C9FE-6885-43DC-8A01-6D0B5A6E2B08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9A1C9FE-6885-43DC-8A01-6D0B5A6E2B08}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{57321F28-5D6B-43C8-ADD7-67A4A60FEB9B} = {A50D52BD-6AA0-4D5B-9B7F-9992C6BD9102}
+		{B9A1C9FE-6885-43DC-8A01-6D0B5A6E2B08} = {A50D52BD-6AA0-4D5B-9B7F-9992C6BD9102}
+	EndGlobalSection
+EndGlobal
