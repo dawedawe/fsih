@@ -1,10 +1,10 @@
 Fsih
 ====
 
-Fsih provides you with the `h` function, meant to be used in the F# repl [fsi](https://learn.microsoft.com/en-us/dotnet/fsharp/tools/fsharp-interactive/).  
-It's modeled after the `h` function in the Elixir [iex](https://hexdocs.pm/iex/1.16.0/IEx.html) repl.
+Fsih provides you with the `h` function, meant to be used in the F# REPL [fsi](https://learn.microsoft.com/en-us/dotnet/fsharp/tools/fsharp-interactive/).  
+It's modeled after the `h` function in the Elixir [iex](https://hexdocs.pm/iex/1.16.0/IEx.html) REPL.
 
-To use it, just start an fsi session with `dotnet fsi`  
+To use it, just start an fsi session with `dotnet fsi`.  
 Load the package and open the namespace:
 ```fsharp
 #r "nuget: Fsih";;
