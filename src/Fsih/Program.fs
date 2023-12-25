@@ -92,25 +92,27 @@ module Program =
 
     [<EntryPoint>]
     let main argv =
-        h <@ Option.isNone @>
-        h <@ Option.defaultValue @>
-        h <@ Seq.allPairs @>
-        h <@ Seq.iter @>
-        h <@ Seq.average [ 1. ] @>
-        h <@ Seq.append @>
-        h <@ Seq.average [ 1. ] @>
-        h <@ printfn @>
-        h <@ None @>
-        h <@ System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes @>
-        h <@ Collections.ResizeArray<int> [] @>
-        h <@ [] @>
-        h <@ "" @>
-        h <@ 1 :: List.empty @>
-        h <@ Map @>
-        h <@ [| 1 |] @>
-        h <@ Array.Parallel.tryFind @>
-        h <@ Seq.head @>
-        h <@ Seq.delay @>
-        h <@ Seq.countBy @>
+        // h <@ Option.isNone @>
+        // h <@ Option.defaultValue @>
+        // h <@ Seq.allPairs @>
+        // h <@ Seq.iter @>
+        // h <@ Seq.average [ 1. ] @>
+        // h <@ Seq.append @>
+        // h <@ Seq.average [ 1. ] @>
+        // h <@ printfn @>
+        // h <@ None @>
+        // h <@ System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes @>
+        // h <@ Collections.ResizeArray<int> [] @>
+        // h <@ [] @>
+        // h <@ "" @>
+        // h <@ 1 :: List.empty @>
+        // h <@ Map @>
+        // h <@ [| 1 |] @>
+        // h <@ Array.Parallel.tryFind @>
+        // h <@ Seq.head @>
+        // h <@ Seq.delay @>
+        // h <@ Seq.countBy @>
+        // h <@ Microsoft.FSharp.Collections.HashIdentity.FromFunctions @>
+        // h <@ List.reduce @>
 
         0

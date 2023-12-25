@@ -58,9 +58,19 @@ type Help =
 
 let cleanupXmlContent (s: string) = s.Replace("\n ", "\n").Trim() // some stray whitespace from the XML
 
+// remove any leading `X:` and trailing `N
+let trimDotNet (s: string) =
+    let s = if s.Length > 2 && s[1] = ':' then s.Substring(2) else s
+    let idx = s.IndexOf('`')
+    let s = if idx > 0 then s.Substring(0, idx) else s
+    s
+
 let xmlDocCache = Collections.Generic.Dictionary<string, XmlDocument>()
 
 let getXmlDocument xmlPath =
+#if DEBUG
+    printfn $"xml file: %s{xmlPath}"
+#endif
     match xmlDocCache.TryGetValue(xmlPath) with
     | true, value -> value
     | _ ->
@@ -70,6 +80,22 @@ let getXmlDocument xmlPath =
         xmlDocCache.Add(xmlPath, xmlDocument)
         xmlDocument
 
+let getTexts (node: Xml.XmlNode) =
+    seq {
+        for child in node.ChildNodes do
+            if child.Name = "#text" then
+                yield child.Value
+
+            if child.Name = "c" then
+                yield child.InnerText
+
+            if child.Name = "see" then
+                let cref = child.Attributes.GetNamedItem("cref")
+
+                if not (isNull cref) then
+                    yield cref.Value |> trimDotNet
+    }
+    |> String.concat ""
 
 let helpText (xmlPath: string) (assembly: string) (modName: string) (implName: string) (sourceName: string) =
     let sourceName = sourceName.Replace('.', '#') // for .ctor
@@ -103,13 +129,13 @@ let helpText (xmlPath: string) (assembly: string) (modName: string) (implName: s
         let summary =
             n.SelectSingleNode("summary")
             |> Option.ofObj
-            |> Option.map _.InnerText
+            |> Option.map getTexts
             |> Option.map cleanupXmlContent
 
         let remarks =
             n.SelectSingleNode("remarks")
             |> Option.ofObj
-            |> Option.map _.InnerText
+            |> Option.map getTexts
             |> Option.map cleanupXmlContent
 
         let parameters =
@@ -119,7 +145,9 @@ let helpText (xmlPath: string) (assembly: string) (modName: string) (implName: s
             |> List.ofSeq
 
         let returns =
-            n.SelectSingleNode("returns") |> Option.ofObj |> Option.map _.InnerText.Trim()
+            n.SelectSingleNode("returns")
+            |> Option.ofObj
+            |> Option.map (fun n -> getTexts(n).Trim())
 
         let exceptions =
             n.SelectNodes("exception")

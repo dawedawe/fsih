@@ -85,3 +85,37 @@ let ``full info is as expected for Seq.splitInto`` () =
 
     | Some _ -> Assert.False(true, sprintf "unexpected help")
     | None -> Assert.False(true, sprintf "no docs for Seq.splitInto")
+
+[<Fact>]
+let ``returns is as expected for HashIdentity.FromFunctions`` () =
+    let doc = tryGetDocumentation <@ HashIdentity.FromFunctions @>
+
+    match doc with
+    | Some { Returns = Some returns } ->
+        Assert.Equal(
+            "An object implementing System.Collections.Generic.IEqualityComparer using the given functions.",
+            returns
+        )
+    | Some _ -> Assert.False(true, sprintf "unexpected help")
+    | None -> Assert.False(true, sprintf "no docs for Seq.splitInto")
+
+[<Fact>]
+let ``remarks is as expected for List.reduce`` () =
+    let doc = tryGetDocumentation <@ List.reduce @>
+
+    match doc with
+    | Some { Remarks = Some remarks } -> Assert.Equal("Raises System.ArgumentException if list is empty", remarks)
+    | Some _ -> Assert.False(true, sprintf "unexpected help")
+    | None -> Assert.False(true, sprintf "no docs for Seq.splitInto")
+
+[<Fact>]
+let ``summary is as expected for Array.sortDescending`` () =
+    let doc = tryGetDocumentation <@ Array.sortDescending @>
+
+    match doc with
+    | Some { Summary = summary } ->
+        Assert.Equal(
+            "Sorts the elements of an array, in descending order, returning a new array. Elements are compared using Microsoft.FSharp.Core.Operators.compare.",
+            summary
+        )
+    | None -> Assert.False(true, sprintf "no docs for Seq.splitInto")
