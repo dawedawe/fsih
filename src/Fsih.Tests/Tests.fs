@@ -83,8 +83,8 @@ let ``full info is as expected for Seq.splitInto`` () =
         Assert.Equal("Microsoft.FSharp.Collections.SeqModule.splitInto", fullName)
         Assert.Equal("FSharp.Core.dll", assembly)
 
-    | Some _ -> Assert.False(true, sprintf "unexpected help")
-    | None -> Assert.False(true, sprintf "no docs for Seq.splitInto")
+    | Some _ -> Assert.False(true, "unexpected help")
+    | None -> Assert.False(true, "no docs for Seq.splitInto")
 
 [<Fact>]
 let ``returns is as expected for HashIdentity.FromFunctions`` () =
@@ -96,8 +96,8 @@ let ``returns is as expected for HashIdentity.FromFunctions`` () =
             "An object implementing System.Collections.Generic.IEqualityComparer using the given functions.",
             returns
         )
-    | Some _ -> Assert.False(true, sprintf "unexpected help")
-    | None -> Assert.False(true, sprintf "no docs for Seq.splitInto")
+    | Some _ -> Assert.False(true, "unexpected help")
+    | None -> Assert.False(true, "no docs for HashIdentity.FromFunctions")
 
 [<Fact>]
 let ``remarks is as expected for List.reduce`` () =
@@ -105,8 +105,8 @@ let ``remarks is as expected for List.reduce`` () =
 
     match doc with
     | Some { Remarks = Some remarks } -> Assert.Equal("Raises System.ArgumentException if list is empty", remarks)
-    | Some _ -> Assert.False(true, sprintf "unexpected help")
-    | None -> Assert.False(true, sprintf "no docs for Seq.splitInto")
+    | Some _ -> Assert.False(true, "unexpected help")
+    | None -> Assert.False(true, "no docs for List.reduce")
 
 [<Fact>]
 let ``summary is as expected for Array.sortDescending`` () =
@@ -118,4 +118,13 @@ let ``summary is as expected for Array.sortDescending`` () =
             "Sorts the elements of an array, in descending order, returning a new array. Elements are compared using Microsoft.FSharp.Core.Operators.compare.",
             summary
         )
-    | None -> Assert.False(true, sprintf "no docs for Seq.splitInto")
+    | None -> Assert.False(true, "no docs for Array.sortDescending")
+
+[<Fact>]
+let ``ReflectedDefinition works as expected`` () =
+    let docReflected = H.TryGetDocumentation(id)
+    let docQuoted = tryGetDocumentation <@ id @>
+
+    match docReflected, docQuoted with
+    | Some r, Some q -> Assert.True((r = q))
+    | _ -> Assert.False(true, "no docs for id")
