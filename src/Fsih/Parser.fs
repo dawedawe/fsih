@@ -65,19 +65,23 @@ let trimDotNet (s: string) =
     let s = if idx > 0 then s.Substring(0, idx) else s
     s
 
-let xmlDocCache = Collections.Generic.Dictionary<string, XmlDocument>()
+// WTF, seems like we loose inner xml (example content) if we cache an XmlDocument
+let xmlDocCache = Collections.Generic.Dictionary<string, string>()
 
 let getXmlDocument xmlPath =
 #if DEBUG
     printfn $"xml file: %s{xmlPath}"
 #endif
     match xmlDocCache.TryGetValue(xmlPath) with
-    | true, value -> value
+    | true, value ->
+        let xmlDocument = XmlDocument()
+        xmlDocument.LoadXml(value)
+        xmlDocument
     | _ ->
         let rawXml = File.ReadAllText(xmlPath)
         let xmlDocument = XmlDocument()
         xmlDocument.LoadXml(rawXml)
-        xmlDocCache.Add(xmlPath, xmlDocument)
+        xmlDocCache.Add(xmlPath, rawXml)
         xmlDocument
 
 let getTexts (node: Xml.XmlNode) =
