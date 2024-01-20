@@ -75,28 +75,29 @@ module Logic =
     open Expr
     open Parser
 
-    let tryGetDocumentation expr =
-        match exprNames expr with
-        | Some(xmlPath, assembly, modName, implName, sourceName) ->
-            helpText xmlPath assembly modName implName sourceName
-        | _ -> None
+    module Quoted =
+        let tryGetDocumentation expr =
+            match exprNames expr with
+            | Some(xmlPath, assembly, modName, implName, sourceName) ->
+                helpText xmlPath assembly modName implName sourceName
+            | _ -> None
 
-    let h (expr: Quotations.Expr) =
-        match tryGetDocumentation expr with
-        | None -> printfn "unable to get documentation"
-        | Some d -> d.Print()
+        let h (expr: Quotations.Expr) =
+            match tryGetDocumentation expr with
+            | None -> printfn "unable to get documentation"
+            | Some d -> d.Print()
 
+    [<AutoOpen>]
     type H() =
-        static member H([<ReflectedDefinition>] expr: Quotations.Expr<_>) = h expr
-        static member TryGetDocumentation([<ReflectedDefinition>] expr: Quotations.Expr<_>) = tryGetDocumentation expr
+        static member h([<ReflectedDefinition>] expr: Quotations.Expr<_>) = Quoted.h expr
+
+        static member TryGetDocumentation([<ReflectedDefinition>] expr: Quotations.Expr<_>) =
+            Quoted.tryGetDocumentation expr
 
 module Program =
 
     [<EntryPoint>]
     let main _argv =
-        // h <@ id @>
-        // H.H id
-        h <@ List.map @>
-        H.H List.map
+        h id
 
         0

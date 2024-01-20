@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.0] - 2024-01-20
+
+### Changed
+
+* Made `h expr` just work without the need for quotation wrapping.
+
 ## [0.2.0] - 2024-01-16
 
 ### Fixed

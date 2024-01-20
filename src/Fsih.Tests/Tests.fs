@@ -36,7 +36,7 @@ let expressions =
 [<Theory>]
 [<MemberData(nameof (expressions))>]
 let ``fetching and parsing docs works for expressions`` ((expr, fullName): (Expr * string)) =
-    let doc = tryGetDocumentation expr
+    let doc = Quoted.tryGetDocumentation expr
 
     match doc with
     | None -> Assert.False(true, sprintf "no docs for %s" fullName)
@@ -44,7 +44,7 @@ let ``fetching and parsing docs works for expressions`` ((expr, fullName): (Expr
 
 [<Fact>]
 let ``full info is as expected for Seq.splitInto`` () =
-    let doc = tryGetDocumentation <@ Seq.splitInto @>
+    let doc = Quoted.tryGetDocumentation <@ Seq.splitInto @>
 
     match doc with
     | Some { Summary = summary
@@ -88,7 +88,7 @@ let ``full info is as expected for Seq.splitInto`` () =
 
 [<Fact>]
 let ``returns is as expected for HashIdentity.FromFunctions`` () =
-    let doc = tryGetDocumentation <@ HashIdentity.FromFunctions @>
+    let doc = Quoted.tryGetDocumentation <@ HashIdentity.FromFunctions @>
 
     match doc with
     | Some { Returns = Some returns } ->
@@ -101,7 +101,7 @@ let ``returns is as expected for HashIdentity.FromFunctions`` () =
 
 [<Fact>]
 let ``remarks is as expected for List.reduce`` () =
-    let doc = tryGetDocumentation <@ List.reduce @>
+    let doc = Quoted.tryGetDocumentation <@ List.reduce @>
 
     match doc with
     | Some { Remarks = Some remarks } -> Assert.Equal("Raises System.ArgumentException if list is empty", remarks)
@@ -110,7 +110,7 @@ let ``remarks is as expected for List.reduce`` () =
 
 [<Fact>]
 let ``summary is as expected for Array.sortDescending`` () =
-    let doc = tryGetDocumentation <@ Array.sortDescending @>
+    let doc = Quoted.tryGetDocumentation <@ Array.sortDescending @>
 
     match doc with
     | Some { Summary = summary } ->
@@ -122,8 +122,8 @@ let ``summary is as expected for Array.sortDescending`` () =
 
 [<Fact>]
 let ``ReflectedDefinition works as expected`` () =
-    let docReflected = H.TryGetDocumentation(id)
-    let docQuoted = tryGetDocumentation <@ id @>
+    let docReflected = TryGetDocumentation(id)
+    let docQuoted = Quoted.tryGetDocumentation <@ id @>
 
     match docReflected, docQuoted with
     | Some r, Some q -> Assert.True((r = q))
