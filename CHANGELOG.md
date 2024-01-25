@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.1] - 2024-01-25
+
+### Fixed
+
+* Fixed support for operators, for example `h (+)` works now.
+
 ## [1.0.0] - 2024-01-20
 
 ### Changed
