@@ -40,7 +40,6 @@ module Expr =
 
     let rec exprNames expr =
         match expr with
-        | SpecificCall <@@ (+) @@> (_, _, exprList) -> exprNames exprList.Tail.Head
         | Call(exprOpt, methodInfo, _exprList) ->
             match exprOpt with
             | Some _ -> None
