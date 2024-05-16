@@ -109,9 +109,9 @@ let helpText (xmlPath: string) (assembly: string) (modName: string) (implName: s
 
     let node =
         let toTry =
-            [ $"/doc/members/member[contains(@name, ':{xmlName}`')]"
-              $"/doc/members/member[contains(@name, ':{xmlName}(')]"
-              $"/doc/members/member[contains(@name, ':{xmlName}')]" ]
+            [ $"""/doc/members/member[contains(@name, ":{xmlName}`")]"""
+              $"""/doc/members/member[contains(@name, ":{xmlName}(")]"""
+              $"""/doc/members/member[contains(@name, ":{xmlName}")]""" ]
 
         seq {
             for t in toTry do
