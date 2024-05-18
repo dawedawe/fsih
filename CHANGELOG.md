@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.2] - 2024-05-18
+
+### Fixed
+
+* Fixed support for expressions with quotes, for example `h shouldn't`.
+
 ## [1.0.1] - 2024-01-25
 
 ### Fixed
