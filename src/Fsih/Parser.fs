@@ -68,21 +68,27 @@ let trimDotNet (s: string) =
 // WTF, seems like we loose inner xml (example content) if we cache an XmlDocument
 let xmlDocCache = Collections.Generic.Dictionary<string, string>()
 
-let getXmlDocument xmlPath =
+let tryGetXmlDocument xmlPath =
 #if DEBUG
-    printfn $"xml file: %s{xmlPath}"
+    printfn $"trying xml file: %s{xmlPath}"
 #endif
-    match xmlDocCache.TryGetValue(xmlPath) with
-    | true, value ->
-        let xmlDocument = XmlDocument()
-        xmlDocument.LoadXml(value)
-        xmlDocument
-    | _ ->
-        let rawXml = File.ReadAllText(xmlPath)
-        let xmlDocument = XmlDocument()
-        xmlDocument.LoadXml(rawXml)
-        xmlDocCache.Add(xmlPath, rawXml)
-        xmlDocument
+    try
+        match xmlDocCache.TryGetValue(xmlPath) with
+        | true, value ->
+            let xmlDocument = XmlDocument()
+            xmlDocument.LoadXml(value)
+            Some xmlDocument
+        | _ ->
+            let rawXml = System.IO.File.ReadAllText(xmlPath)
+            let xmlDocument = XmlDocument()
+            xmlDocument.LoadXml(rawXml)
+            xmlDocCache.Add(xmlPath, rawXml)
+            Some xmlDocument
+    with _ ->
+#if DEBUG
+        printfn $"xml file not found: {xmlPath}"
+#endif
+        None
 
 let getTexts (node: Xml.XmlNode) =
     seq {
@@ -101,93 +107,91 @@ let getTexts (node: Xml.XmlNode) =
     }
     |> String.concat ""
 
-let helpText (xmlPath: string) (assembly: string) (modName: string) (implName: string) (sourceName: string) =
+let tryMkHelp
+    (xmlDocument: XmlDocument option)
+    (assembly: string)
+    (modName: string)
+    (implName: string)
+    (sourceName: string)
+    =
     let sourceName = sourceName.Replace('.', '#') // for .ctor
     let implName = implName.Replace('.', '#') // for .ctor
     let xmlName = $"{modName}.{implName}"
-    let xmlDocument = getXmlDocument xmlPath
 
-    let node =
-        let toTry =
-            [ $"""/doc/members/member[contains(@name, ":{xmlName}`")]"""
-              $"""/doc/members/member[contains(@name, ":{xmlName}(")]"""
-              $"""/doc/members/member[contains(@name, ":{xmlName}")]""" ]
+    let toTry =
+        [ $"""/doc/members/member[contains(@name, ":{xmlName}`")]"""
+          $"""/doc/members/member[contains(@name, ":{xmlName}(")]"""
+          $"""/doc/members/member[contains(@name, ":{xmlName}")]""" ]
 
+    xmlDocument
+    |> Option.bind (fun xmlDocument ->
         seq {
             for t in toTry do
-#if DEBUG
-                printfn "trying xpath: %s" t
-#endif
                 let node = xmlDocument.SelectSingleNode(t)
                 if not (isNull node) then Some node else None
         }
-        |> Seq.tryPick id
+        |> Seq.tryPick id)
+    |> function
+        | None -> ValueNone
+        | Some n ->
+            let summary =
+                n.SelectSingleNode("summary")
+                |> Option.ofObj
+                |> Option.map getTexts
+                |> Option.map cleanupXmlContent
 
-    match node with
-    | None ->
-#if DEBUG
-        printfn $"// No node found for {xmlName}"
-#endif
-        None
-    | Some n ->
-        let summary =
-            n.SelectSingleNode("summary")
-            |> Option.ofObj
-            |> Option.map getTexts
-            |> Option.map cleanupXmlContent
+            let remarks =
+                n.SelectSingleNode("remarks")
+                |> Option.ofObj
+                |> Option.map getTexts
+                |> Option.map cleanupXmlContent
 
-        let remarks =
-            n.SelectSingleNode("remarks")
-            |> Option.ofObj
-            |> Option.map getTexts
-            |> Option.map cleanupXmlContent
+            let parameters =
+                n.SelectNodes("param")
+                |> Seq.cast<XmlNode>
+                |> Seq.map (fun n -> n.Attributes.GetNamedItem("name").Value.Trim(), n.InnerText.Trim())
+                |> List.ofSeq
 
-        let parameters =
-            n.SelectNodes("param")
-            |> Seq.cast<XmlNode>
-            |> Seq.map (fun n -> n.Attributes.GetNamedItem("name").Value.Trim(), n.InnerText.Trim())
-            |> List.ofSeq
+            let returns =
+                n.SelectSingleNode("returns")
+                |> Option.ofObj
+                |> Option.map (fun n -> getTexts(n).Trim())
 
-        let returns =
-            n.SelectSingleNode("returns")
-            |> Option.ofObj
-            |> Option.map (fun n -> getTexts(n).Trim())
+            let exceptions =
+                n.SelectNodes("exception")
+                |> Seq.cast<XmlNode>
+                |> Seq.map (fun n ->
+                    let exType = n.Attributes.GetNamedItem("cref").Value
+                    let idx = exType.IndexOf(':')
+                    let exType = if idx >= 0 then exType.Substring(idx + 1) else exType
+                    exType.Trim(), n.InnerText.Trim())
+                |> List.ofSeq
 
-        let exceptions =
-            n.SelectNodes("exception")
-            |> Seq.cast<XmlNode>
-            |> Seq.map (fun n ->
-                let exType = n.Attributes.GetNamedItem("cref").Value
-                let idx = exType.IndexOf(':')
-                let exType = if idx >= 0 then exType.Substring(idx + 1) else exType
-                exType.Trim(), n.InnerText.Trim())
-            |> List.ofSeq
+            let examples =
+                n.SelectNodes("example")
+                |> Seq.cast<XmlNode>
+                |> Seq.map (fun n ->
+                    let codeNode = n.SelectSingleNode("code")
 
-        let examples =
-            n.SelectNodes("example")
-            |> Seq.cast<XmlNode>
-            |> Seq.map (fun n ->
-                let codeNode = n.SelectSingleNode("code")
+                    let code =
+                        if isNull codeNode then
+                            ""
+                        else
+                            n.RemoveChild(codeNode) |> ignore
+                            cleanupXmlContent codeNode.InnerText
 
-                let code =
-                    if isNull codeNode then
-                        ""
-                    else
-                        n.RemoveChild(codeNode) |> ignore
-                        cleanupXmlContent codeNode.InnerText
+                    code, cleanupXmlContent n.InnerText)
+                |> List.ofSeq
 
-                code, cleanupXmlContent n.InnerText)
-            |> List.ofSeq
-
-        match summary with
-        | Some s ->
-            { Summary = s
-              Remarks = remarks
-              Parameters = parameters
-              Returns = returns
-              Exceptions = exceptions
-              Examples = examples
-              FullName = $"{modName}.{sourceName}" // the long ident as users see it
-              Assembly = assembly }
-            |> Some
-        | None -> None
+            match summary with
+            | Some s ->
+                { Summary = s
+                  Remarks = remarks
+                  Parameters = parameters
+                  Returns = returns
+                  Exceptions = exceptions
+                  Examples = examples
+                  FullName = $"{modName}.{sourceName}" // the long ident as users see it
+                  Assembly = assembly }
+                |> ValueSome
+            | None -> ValueNone
