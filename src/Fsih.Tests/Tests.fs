@@ -39,22 +39,22 @@ let ``fetching and parsing docs works for expressions`` ((expr, fullName): (Expr
     let doc = Quoted.tryGetDocumentation expr
 
     match doc with
-    | None -> Assert.False(true, sprintf "no docs for %s" fullName)
-    | Some d -> Assert.Equal(fullName, d.FullName)
+    | ValueNone -> Assert.False(true, sprintf "no docs for %s" fullName)
+    | ValueSome d -> Assert.Equal(fullName, d.FullName)
 
 [<Fact>]
 let ``full info is as expected for Seq.splitInto`` () =
     let doc = Quoted.tryGetDocumentation <@ Seq.splitInto @>
 
     match doc with
-    | Some { Summary = summary
-             Remarks = Some remarks
-             Parameters = parameters
-             Returns = Some returns
-             Exceptions = exceptions
-             Examples = examples
-             FullName = fullName
-             Assembly = assembly } ->
+    | ValueSome { Summary = summary
+                  Remarks = Some remarks
+                  Parameters = parameters
+                  Returns = Some returns
+                  Exceptions = exceptions
+                  Examples = examples
+                  FullName = fullName
+                  Assembly = assembly } ->
         Assert.Equal("Splits the input sequence into at most count chunks.", summary)
 
         Assert.Equal(
@@ -83,42 +83,42 @@ let ``full info is as expected for Seq.splitInto`` () =
         Assert.Equal("Microsoft.FSharp.Collections.SeqModule.splitInto", fullName)
         Assert.Equal("FSharp.Core.dll", assembly)
 
-    | Some _ -> Assert.False(true, "unexpected help")
-    | None -> Assert.False(true, "no docs for Seq.splitInto")
+    | ValueSome _ -> Assert.False(true, "unexpected help")
+    | ValueNone -> Assert.False(true, "no docs for Seq.splitInto")
 
 [<Fact>]
 let ``returns is as expected for HashIdentity.FromFunctions`` () =
     let doc = Quoted.tryGetDocumentation <@ HashIdentity.FromFunctions @>
 
     match doc with
-    | Some { Returns = Some returns } ->
+    | ValueSome { Returns = Some returns } ->
         Assert.Equal(
             "An object implementing System.Collections.Generic.IEqualityComparer using the given functions.",
             returns
         )
-    | Some _ -> Assert.False(true, "unexpected help")
-    | None -> Assert.False(true, "no docs for HashIdentity.FromFunctions")
+    | ValueSome _ -> Assert.False(true, "unexpected help")
+    | ValueNone -> Assert.False(true, "no docs for HashIdentity.FromFunctions")
 
 [<Fact>]
 let ``remarks is as expected for List.reduce`` () =
     let doc = Quoted.tryGetDocumentation <@ List.reduce @>
 
     match doc with
-    | Some { Remarks = Some remarks } -> Assert.Equal("Raises System.ArgumentException if list is empty", remarks)
-    | Some _ -> Assert.False(true, "unexpected help")
-    | None -> Assert.False(true, "no docs for List.reduce")
+    | ValueSome { Remarks = Some remarks } -> Assert.Equal("Raises System.ArgumentException if list is empty", remarks)
+    | ValueSome _ -> Assert.False(true, "unexpected help")
+    | ValueNone -> Assert.False(true, "no docs for List.reduce")
 
 [<Fact>]
 let ``summary is as expected for Array.sortDescending`` () =
     let doc = Quoted.tryGetDocumentation <@ Array.sortDescending @>
 
     match doc with
-    | Some { Summary = summary } ->
+    | ValueSome { Summary = summary } ->
         Assert.Equal(
             "Sorts the elements of an array, in descending order, returning a new array. Elements are compared using Microsoft.FSharp.Core.Operators.compare.",
             summary
         )
-    | None -> Assert.False(true, "no docs for Array.sortDescending")
+    | ValueNone -> Assert.False(true, "no docs for Array.sortDescending")
 
 [<Fact>]
 let ``ReflectedDefinition works as expected`` () =
@@ -126,5 +126,5 @@ let ``ReflectedDefinition works as expected`` () =
     let docQuoted = Quoted.tryGetDocumentation <@ id @>
 
     match docReflected, docQuoted with
-    | Some r, Some q -> Assert.True((r = q))
+    | ValueSome r, ValueSome q -> Assert.True((r = q))
     | _ -> Assert.False(true, "no docs for id")
