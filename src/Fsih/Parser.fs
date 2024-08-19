@@ -2,6 +2,7 @@ module Fsih.Parser
 
 open System
 open System.IO
+open System.Text.RegularExpressions
 open System.Xml
 open Spectre.Console
 
@@ -68,6 +69,23 @@ let trimDotNet (s: string) =
 // WTF, seems like we loose inner xml (example content) if we cache an XmlDocument
 let xmlDocCache = Collections.Generic.Dictionary<string, string>()
 
+let toFallbackXmlPath (xmlPath: string) =
+    let replaceLast (s: string) (oldValue: string) (newValue: string) =
+        let idx = s.LastIndexOf(oldValue)
+
+        if idx >= 0 then
+            s.Substring(0, idx) + newValue + s.Substring(idx + oldValue.Length)
+        else
+            s
+
+    let sep = Path.DirectorySeparatorChar
+    let xmlPath = replaceLast xmlPath "shared" "packs"
+    let xmlPath = replaceLast xmlPath $".App{sep}" $".App.Ref{sep}"
+    let version = Regex.Match(xmlPath, @"\d+\.\d+\.\d+").Value
+    let release = version.Substring(0, version.LastIndexOf('.'))
+    let xmlPath = replaceLast xmlPath version $"{version}{sep}ref{sep}net{release}"
+    xmlPath
+
 let tryGetXmlDocument xmlPath =
 #if DEBUG
     printfn $"trying xml file: %s{xmlPath}"
@@ -79,14 +97,26 @@ let tryGetXmlDocument xmlPath =
             xmlDocument.LoadXml(value)
             Some xmlDocument
         | _ ->
-            let rawXml = System.IO.File.ReadAllText(xmlPath)
+            let fileExists = File.Exists(xmlPath)
+
+            let xmlPath =
+                if fileExists then
+                    xmlPath
+                else
+                    let fallback = toFallbackXmlPath xmlPath
+#if DEBUG
+                    printfn $"falling back to xml file: %s{fallback}"
+#endif
+                    fallback
+
+            let rawXml = File.ReadAllText(xmlPath)
             let xmlDocument = XmlDocument()
             xmlDocument.LoadXml(rawXml)
-            xmlDocCache.Add(xmlPath, rawXml)
+            xmlDocCache[xmlPath] <- rawXml
             Some xmlDocument
     with _ ->
 #if DEBUG
-        printfn $"xml file not found: {xmlPath}"
+        printfn $"xml file not found"
 #endif
         None
 

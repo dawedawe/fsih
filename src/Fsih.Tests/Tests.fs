@@ -30,7 +30,8 @@ let expressions =
           <@ Array2D.blit @> :> Expr, "Microsoft.FSharp.Collections.Array2DModule.blit"
           <@ HashIdentity.Reference @> :> Expr, "Microsoft.FSharp.Collections.HashIdentity.Reference"
           <@ Array.Parallel.tryFind @> :> Expr, "Microsoft.FSharp.Collections.ArrayModule.Parallel.tryFind"
-          <@ (|>) @> :> Expr, "Microsoft.FSharp.Core.Operators.op_PipeRight" ]
+          <@ (|>) @> :> Expr, "Microsoft.FSharp.Core.Operators.op_PipeRight"
+          <@ System.Console.ReadLine @> :> Expr, "System.Console.ReadLine" ]
     )
 
 [<Theory>]
