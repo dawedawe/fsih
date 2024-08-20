@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.3] - 2024-08-20
+
+### Fixed
+
+* Fixed support for non-FSharp.Core namespaces, #14.
+
 ## [1.0.2] - 2024-05-18
 
 ### Fixed
