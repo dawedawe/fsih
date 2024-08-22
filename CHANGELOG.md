@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.4] - 2024-08-22
+
+### Fixed
+
+* Fixed support for non-FSharp.Core namespaces when using a preview SDK.
+
 ## [1.0.3] - 2024-08-20
 
 ### Fixed
