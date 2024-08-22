@@ -81,9 +81,17 @@ let toFallbackXmlPath (xmlPath: string) =
     let sep = Path.DirectorySeparatorChar
     let xmlPath = replaceLast xmlPath "shared" "packs"
     let xmlPath = replaceLast xmlPath $".App{sep}" $".App.Ref{sep}"
-    let version = Regex.Match(xmlPath, @"\d+\.\d+\.\d+").Value
-    let release = version.Substring(0, version.LastIndexOf('.'))
-    let xmlPath = replaceLast xmlPath version $"{version}{sep}ref{sep}net{release}"
+    let splitted = xmlPath.Split(sep)
+    let fullVersion = splitted.[splitted.Length - 2]
+
+    let shortVersion =
+        fullVersion.Split(".")
+        |> Array.take 2
+        |> fun ns -> System.String.Join(".", ns)
+
+    let xmlPath =
+        replaceLast xmlPath fullVersion $"{fullVersion}{sep}ref{sep}net{shortVersion}"
+
     xmlPath
 
 let tryGetXmlDocument xmlPath =
